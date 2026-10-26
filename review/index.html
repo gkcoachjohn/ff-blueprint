@@ -1,0 +1,152 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Factory Blueprint — Review</title>
+<style>
+:root{--bg:#F4F6F2;--surface:#FFFFFF;--surface2:#FAFBF8;--ink:#16201B;--muted:#55605A;--faint:#8A938C;--line:#E4E8E2;--line2:#D2D8CE;--accent:#1B7A4B;--accentsoft:#E7F2EB;--blueprint:#2E5A8A;--blueprintsoft:#E7EEF6;--gold:#A87D14;--shadow:0 1px 2px rgba(20,30,24,.05),0 6px 22px rgba(20,30,24,.07)}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1512;--surface:#151D18;--surface2:#1A241E;--ink:#E9EFE9;--muted:#A0AAA2;--faint:#6C776F;--line:#26302A;--line2:#334036;--accent:#3BB278;--accentsoft:#16281E;--blueprint:#6F9DD2;--blueprintsoft:#16202C;--gold:#D8B24C;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.4)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 130px}
+.top{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--line);margin:0 -16px 0;padding:12px 16px}
+.eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:21px;margin:4px 0 2px;font-weight:800;letter-spacing:-.01em}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.pad{padding:16px}
+.qcard{display:flex;align-items:center;gap:12px;padding:15px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;width:100%;text-align:left;font:inherit;color:inherit;margin-top:10px;box-shadow:var(--shadow)}
+.qcard:active{background:var(--accentsoft)}
+.qcard .nm{font-weight:750;font-size:16px}
+.qcard .sub{font-size:12px;color:var(--faint)}
+.qcard .ov{margin-left:auto;text-align:center}
+.qcard .ov .n{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.qcard .ov .l{font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+.chip{font-family:ui-monospace,Menlo,monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);background:var(--surface2)}
+.chip.gk{color:var(--gold);border-color:var(--gold)}
+.chip.trial{color:var(--blueprint);border-color:var(--blueprint)}
+.corner{margin-top:18px}
+.corner-h{display:flex;align-items:center;gap:8px;margin:0 2px 8px}
+.corner-h h3{margin:0;font-size:14px;font-weight:750}.corner-h .avg{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:3px}
+.skill{border-top:1px solid var(--line);padding:11px 2px}.skill:first-child{border-top:none}
+.sk-name{font-weight:600;font-size:14px;margin-bottom:6px}
+.scale{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.sb{padding:9px 0;border:1px solid var(--line2);border-radius:7px;background:var(--surface2);color:var(--muted);font-weight:700;font-size:14px;cursor:pointer;font-variant-numeric:tabular-nums}
+.sb.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.field{margin-top:10px}
+.field label{font-size:12px;color:var(--faint);display:block;margin-bottom:4px}
+select,textarea{font:inherit;color:inherit;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:70px}
+.notebox{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13.5px;margin-top:6px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 -4px 18px rgba(0,0,0,.06)}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-weight:700;font-size:15px;cursor:pointer}
+.btn.ghost{background:none;color:var(--muted);border:1px solid var(--line2)}
+.btn:disabled{opacity:.5}
+.link{color:var(--accent);background:none;border:none;cursor:pointer;font:inherit;padding:0;text-decoration:underline}
+.done{text-align:center;padding:40px 10px}.done .big{font-size:46px}
+.foc{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-top:8px}
+.foc .tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.foc .w{background:var(--accentsoft);color:var(--accent)}.foc .s{background:#F6EED6;color:var(--gold)}
+@media (prefers-color-scheme:dark){.foc .s{background:#2A2416}}
+</style></head><body><div class="wrap" id="app"><div class="card pad" style="margin-top:20px"><p class="muted">Loading…</p></div></div>
+<script>
+(function(){
+var FN="https://fsbzdnstyvsyirlcyjiw.supabase.co/functions/v1/ff-blueprint";
+var TOKEN=new URLSearchParams(location.search).get('c')||'';
+var app=document.getElementById('app');
+var REVIEWER='',PENDING=[],cur=null,edits={};
+var CORNER_ORDER=['Technical/Tactical','Goalkeeping','Physical','Psychological','Social'];
+var CC={'Technical/Tactical':'#1F8A54','Goalkeeping':'#C1712A','Physical':'#2E6FB0','Psychological':'#8A5A9E','Social':'#1E8A86'};
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function head(sub){return '<div class="top"><div class="eyebrow">Futbol Factory · Factory Blueprint</div><h1>Approval queue</h1><div class="muted" style="font-size:13px">'+esc(REVIEWER)+(sub?' · '+sub:'')+'</div></div>';}
+function showError(m){app.innerHTML='<div class="card pad" style="margin-top:20px"><div class="eyebrow">Factory Blueprint</div><h1 style="margin-top:6px">Review</h1><p class="muted">'+esc(m)+'</p></div>';}
+
+function load(){
+  app.innerHTML='<div class="card pad" style="margin-top:20px"><p class="muted">Loading…</p></div>';
+  fetch(FN+'?review=1&c='+encodeURIComponent(TOKEN)).then(function(r){return r.json();}).then(function(j){
+    if(!j.ok){showError(j.error||'Not allowed.');return;}
+    REVIEWER=j.reviewer;PENDING=j.pending;renderList();
+  }).catch(function(){showError("Couldn’t load — check your connection and refresh.");});
+}
+
+function renderList(){
+  cur=null;edits={};
+  var html=head(PENDING.length+' waiting');
+  if(PENDING.length===0){html+='<div class="card pad" style="margin-top:16px"><p class="muted">Nothing waiting for review. 🎉 New assessments from coaches will appear here.</p></div>';app.innerHTML=html;return;}
+  html+='<div style="margin-top:6px">';
+  PENDING.forEach(function(a,i){
+    var gk=a.player.position==='Goalkeeper'?'<span class="chip gk">GK</span>':'';
+    var tr=a.type==='Post-Trial'?'<span class="chip trial">Trial</span>':'';
+    html+='<button class="qcard" data-i="'+i+'"><div><div class="nm">'+esc(a.player.name)+' '+gk+' '+tr+'</div><div class="sub">'+esc(a.term)+' · by '+esc(a.coach)+' · '+a.scores.length+' skills</div></div><div class="ov"><div class="n">'+(a.overall!=null?a.overall:'–')+'</div><div class="l">overall</div></div></button>';
+  });
+  html+='</div>';
+  app.innerHTML=html;
+  app.querySelectorAll('.qcard').forEach(function(b){b.onclick=function(){openOne(PENDING[+b.getAttribute('data-i')]);};});
+}
+
+function openOne(a){
+  cur=a;edits={};
+  a.scores.forEach(function(s){edits[s.rowId]=s.score;});
+  var gk=a.player.position==='Goalkeeper'?' · Goalkeeper':'';
+  var html=head('')+
+   '<div class="card pad" style="margin-top:14px"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-weight:800;font-size:19px">'+esc(a.player.name)+'</div><div class="faint" style="font-size:12px">'+esc(a.term)+' · scored by '+esc(a.coach)+gk+'</div></div><button class="link" id="back">back</button></div>'+
+     (a.notes?'<div class="field"><label>Coach note</label><div class="notebox">'+esc(a.notes)+'</div></div>':'')+
+   '</div>'+
+   '<div id="skills"></div>'+
+   '<div class="card pad corner"><div style="font-weight:700;font-size:14px">This term’s 3 focus areas</div><div class="faint" style="font-size:12px;margin-bottom:4px">Auto-picked from the lowest scores — change any if you want (2 to work on + 1 strength to sharpen).</div>'+
+     focusRow('w','Work on',0)+focusRow('w','Work on',1)+focusRow('s','Strength',2)+
+   '</div>'+
+   '<div class="card pad corner"><label style="font-size:12px;color:var(--faint)">Your review note (optional — saved on the assessment)</label><textarea id="rnote" placeholder="Any changes you made, or a note for the record...">'+esc(a.reviewNotes||'')+'</textarea></div>'+
+   '<div class="bar"><button class="btn ghost" id="save">Save edits</button><button class="btn" id="approve" style="flex:1">Approve</button></div>';
+  app.innerHTML=html;
+  document.getElementById('back').onclick=renderList;
+  document.getElementById('save').onclick=function(){submit('save');};
+  document.getElementById('approve').onclick=function(){submit('approve');};
+  drawSkills();
+}
+
+function focusRow(cls,label,idx){
+  var opts='<option value="">—</option>'+cur.scores.map(function(s){return '<option value="'+esc(s.name)+'"'+(cur.focus[idx]===s.name?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');
+  return '<div class="foc"><span class="tag '+cls+'">'+label+'</span><select data-foc="'+idx+'">'+opts+'</select></div>';
+}
+
+function drawSkills(){
+  var byC={};cur.scores.forEach(function(s){(byC[s.corner]||(byC[s.corner]=[])).push(s);});
+  var out='';
+  CORNER_ORDER.forEach(function(c){
+    if(!byC[c])return;
+    var vals=byC[c].map(function(s){return edits[s.rowId];});
+    var avg=(vals.reduce(function(a,b){return a+b;},0)/vals.length);
+    out+='<div class="corner"><div class="corner-h"><span class="dot" style="background:'+CC[c]+'"></span><h3>'+esc(c)+'</h3><span class="avg" id="avg-'+cslug(c)+'">avg '+(Math.round(avg*10)/10)+'</span></div><div class="card pad">';
+    byC[c].forEach(function(s){
+      var sc=edits[s.rowId];var btns='';
+      for(var n=1;n<=10;n++){btns+='<button class="sb'+(sc===n?' on':'')+'" data-row="'+s.rowId+'" data-v="'+n+'">'+n+'</button>';}
+      out+='<div class="skill"><div class="sk-name">'+esc(s.name)+'</div><div class="scale">'+btns+'</div></div>';
+    });
+    out+='</div></div>';
+  });
+  var wrap=document.getElementById('skills');wrap.innerHTML=out;
+  wrap.querySelectorAll('.sb').forEach(function(b){b.onclick=function(){edits[b.getAttribute('data-row')]=+b.getAttribute('data-v');drawSkills();};});
+}
+function cslug(c){return c.replace(/[^a-z]/gi,'');}
+
+function submit(action){
+  var sa=document.getElementById('approve'),sv=document.getElementById('save');
+  sa.disabled=true;sv.disabled=true;sa.textContent=action==='approve'?'Approving...':'Saving...';
+  var scores=cur.scores.map(function(s){return {rowId:s.rowId,corner:s.corner,name:s.name,score:edits[s.rowId]};});
+  var focus=[];app.querySelectorAll('[data-foc]').forEach(function(sel){focus[+sel.getAttribute('data-foc')]=sel.value;});
+  var rnote=document.getElementById('rnote').value;
+  fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({c:TOKEN,action:action,assessmentId:cur.id,scores:scores,focus:focus,reviewNotes:rnote})})
+   .then(function(r){return r.json();}).then(function(j){
+     if(!j.ok){sa.disabled=false;sv.disabled=false;sa.textContent='Approve';alert('Error: '+(j.error||'try again'));return;}
+     if(action==='approve'){renderDone();}else{load();}
+   }).catch(function(){sa.disabled=false;sv.disabled=false;sa.textContent='Approve';alert('Network error — try again.');});
+}
+function renderDone(){
+  app.innerHTML=head('')+'<div class="done"><div class="big">✅</div><h1>Approved</h1><p class="muted">'+esc(cur.player.name)+'’s Blueprint is approved. (Sending it to the family is the next piece we’ll build.)</p><button class="btn" id="next" style="margin-top:16px">Back to the queue</button></div>';
+  document.getElementById('next').onclick=load;
+}
+
+if(!TOKEN){showError("This link is missing its code. Ask for your personal review link.");}
+else{load();}
+})();
+</script></body></html>
