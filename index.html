@@ -1,0 +1,180 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Factory Blueprint — Scoring</title>
+<style>
+:root{--bg:#F4F6F2;--surface:#FFFFFF;--surface2:#FAFBF8;--ink:#16201B;--muted:#55605A;--faint:#8A938C;--line:#E4E8E2;--line2:#D2D8CE;--accent:#1B7A4B;--accentsoft:#E7F2EB;--blueprint:#2E5A8A;--blueprintsoft:#E7EEF6;--gold:#A87D14;--shadow:0 1px 2px rgba(20,30,24,.05),0 6px 22px rgba(20,30,24,.07)}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1512;--surface:#151D18;--surface2:#1A241E;--ink:#E9EFE9;--muted:#A0AAA2;--faint:#6C776F;--line:#26302A;--line2:#334036;--accent:#3BB278;--accentsoft:#16281E;--blueprint:#6F9DD2;--blueprintsoft:#16202C;--gold:#D8B24C;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.4)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 120px}
+.top{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--line);margin:0 -16px 0;padding:12px 16px}
+.eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:21px;margin:4px 0 2px;font-weight:800;letter-spacing:-.01em}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.pad{padding:16px}
+.search{width:100%;padding:12px 14px;font-size:16px;border:1px solid var(--line2);border-radius:10px;background:var(--surface2);color:var(--ink)}
+.plist{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:center;gap:10px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit}
+.prow:active{background:var(--accentsoft)}
+.prow .nm{font-weight:650}
+.chip{font-family:ui-monospace,Menlo,monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);background:var(--surface2);white-space:nowrap}
+.chip.gk{color:var(--gold);border-color:var(--gold)}
+.corner{margin-top:22px}
+.corner-h{display:flex;align-items:center;gap:8px;margin:0 2px 8px}
+.corner-h h3{margin:0;font-size:15px;font-weight:750}
+.dot{width:10px;height:10px;border-radius:3px}
+.skill{border-top:1px solid var(--line);padding:13px 2px}
+.skill:first-child{border-top:none}
+.sk-top{display:flex;align-items:baseline;gap:8px}
+.sk-name{font-weight:650;font-size:15px;flex:1}
+.ex-btn{font-size:11.5px;color:var(--blueprint);background:none;border:1px solid var(--blueprint);border-radius:6px;padding:2px 8px;cursor:pointer}
+.ex{display:none;margin-top:8px;padding:10px 12px;background:var(--blueprintsoft);border-radius:8px;font-size:12.5px;line-height:1.5}
+.ex.show{display:block}
+.ex b{color:var(--ink)}
+.scale{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:10px}
+.sb{padding:10px 0;border:1px solid var(--line2);border-radius:8px;background:var(--surface2);color:var(--muted);font-weight:700;font-size:15px;cursor:pointer;font-variant-numeric:tabular-nums}
+.sb.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.scalelabels{display:flex;justify-content:space-between;margin-top:5px;font-size:10px}
+.scalelabels span{color:var(--faint)}
+.bandsel{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+select,textarea{font:inherit;color:inherit;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:10px 12px}
+textarea{width:100%;min-height:80px;margin-top:6px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 18px rgba(0,0,0,.06)}
+.bar .prog{flex:1;font-size:13px}
+.bar .prog b{color:var(--ink)}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 18px;font-weight:700;font-size:15px;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{color:var(--accent);background:none;border:none;cursor:pointer;font:inherit;padding:0;text-decoration:underline}
+.done{text-align:center;padding:40px 10px}
+.done .big{font-size:46px}
+a{color:var(--accent)}
+</style></head><body><div class="wrap" id="app"><div class="card pad" style="margin-top:20px"><p class="muted">Loading…</p></div></div>
+<script>
+(function(){
+var FN="https://fsbzdnstyvsyirlcyjiw.supabase.co/functions/v1/ff-blueprint";
+var TOKEN=new URLSearchParams(location.search).get('c')||'';
+var D=null;
+var app=document.getElementById('app');
+var BANDS=[['B1','B1 · U6-U8'],['B2','B2 · U9-U11'],['B3','B3 · U12-U14'],['B4','B4 · U15-U19'],['B5','B5 · College/Pro']];
+var BORD={B1:1,B2:2,B3:3,B4:4,B5:5};
+var CORNER_ORDER=['Technical/Tactical','Goalkeeping','Physical','Psychological','Social'];
+var CORNER_COLOR={'Technical/Tactical':'#1F8A54','Goalkeeping':'#C1712A','Physical':'#2E6FB0','Psychological':'#8A5A9E','Social':'#1E8A86'};
+var state={player:null,band:null,scores:{},notes:''};
+
+function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function header(sub){return '<div class="top"><div class="eyebrow">Futbol Factory · Factory Blueprint</div><h1>Score a player</h1><div class="muted" style="font-size:13px">Coach: '+esc(D&&D.coach?D.coach.name:'')+(sub?' · '+sub:'')+'</div></div>';}
+function showError(msg){app.innerHTML='<div class="card pad" style="margin-top:20px"><div class="eyebrow">Futbol Factory · Factory Blueprint</div><h1 style="margin-top:6px">Factory Blueprint</h1><p class="muted">'+esc(msg)+'</p></div>';}
+
+function renderPick(){
+  state={player:null,band:null,scores:{},notes:''};
+  app.innerHTML=header('')+'<div class="card pad" style="margin-top:14px"><input class="search" id="q" placeholder="Search players by name..." autocomplete="off"><div class="plist" id="plist"></div></div>';
+  var q=document.getElementById('q'),list=document.getElementById('plist');
+  function draw(){
+    var term=(q.value||'').toLowerCase();
+    var ms=D.players.filter(function(p){return !term||p.name.toLowerCase().indexOf(term)>=0||(p.parent||'').toLowerCase().indexOf(term)>=0;});
+    list.innerHTML='';
+    ms.slice(0,60).forEach(function(p){
+      var b=p.band?('<span class="chip">'+p.band+'</span>'):'<span class="chip" style="color:#A87D14;border-color:#A87D14">set age</span>';
+      var gk=p.position==='Goalkeeper'?'<span class="chip gk">GK</span>':'';
+      var row=el('<button class="prow"><span class="nm">'+esc(p.name)+'</span>'+gk+b+'<span class="faint" style="font-size:11px;margin-left:auto">'+esc(p.parent)+'</span></button>');
+      row.onclick=function(){state.player=p;state.band=p.band||null;state.scores={};state.notes='';renderScore();};
+      list.appendChild(row);
+    });
+    if(ms.length===0)list.innerHTML='<p class="faint" style="padding:10px">No players match.</p>';
+  }
+  q.oninput=draw;draw();
+}
+
+function applicable(){
+  var pos=state.player.position==='Goalkeeper'?['Goalkeeper','Both']:['Outfield','Both'];
+  return D.skills.filter(function(s){
+    if(pos.indexOf(s.appliesTo)<0)return false;
+    if(!state.band)return false;
+    if(BORD[state.band]<BORD[s.fromBand||'B1'])return false;
+    return !!s.anchors[state.band];
+  });
+}
+
+function renderScore(){
+  var p=state.player;
+  var bandOpts=BANDS.map(function(b){return '<option value="'+b[0]+'"'+(b[0]===state.band?' selected':'')+'>'+b[1]+'</option>';}).join('');
+  var gk=p.position==='Goalkeeper'?' · Goalkeeper':'';
+  app.innerHTML=header('')+
+   '<div class="card pad" style="margin-top:14px"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-weight:800;font-size:18px">'+esc(p.name)+'</div><div class="faint" style="font-size:12px">'+esc(p.parent)+gk+'</div></div><button class="link" id="chg">change</button></div>'+
+   '<div class="bandsel"><span class="faint" style="font-size:12px">Age band:</span><select id="band"><option value="">— pick —</option>'+bandOpts+'</select>'+(p.band?'':' <span class="chip" style="color:#A87D14;border-color:#A87D14">no birthday on file</span>')+'</div></div>'+
+   '<div id="skills"></div>'+
+   '<div class="corner" style="margin-top:22px"><div class="card pad"><div style="font-weight:650;font-size:14px;margin-bottom:4px">Coach notes (optional)</div><textarea id="notes" placeholder="Anything John should know — a highlight, a focus, context..."></textarea></div></div>'+
+   '<div class="bar"><div class="prog" id="prog"></div><button class="btn" id="submit" disabled>Submit</button></div>';
+  document.getElementById('chg').onclick=renderPick;
+  document.getElementById('band').onchange=function(e){state.band=e.target.value||null;state.scores={};drawSkills();};
+  document.getElementById('notes').oninput=function(e){state.notes=e.target.value;};
+  document.getElementById('submit').onclick=submit;
+  drawSkills();
+}
+
+function drawSkills(){
+  var wrap=document.getElementById('skills');
+  if(!state.band){wrap.innerHTML='<div class="card pad" style="margin-top:14px"><p class="muted">Pick an age band above to load this player’s skills.</p></div>';updateProg();return;}
+  var sk=applicable();
+  var byC={};sk.forEach(function(s){(byC[s.corner]||(byC[s.corner]=[])).push(s);});
+  var out='';
+  CORNER_ORDER.forEach(function(c){
+    if(!byC[c])return;
+    out+='<div class="corner"><div class="corner-h"><span class="dot" style="background:'+CORNER_COLOR[c]+'"></span><h3>'+esc(c)+'</h3></div><div class="card pad">';
+    byC[c].forEach(function(s){
+      var sc=state.scores[s.id];
+      var btns='';for(var n=1;n<=10;n++){btns+='<button class="sb'+(sc===n?' on':'')+'" data-sk="'+s.id+'" data-v="'+n+'">'+n+'</button>';}
+      out+='<div class="skill"><div class="sk-top"><span class="sk-name">'+esc(s.name)+'</span><button class="ex-btn" data-ex="'+s.id+'">example</button></div>'+
+           '<div class="ex" id="ex-'+s.id+'">'+anchorHtml(s.anchors[state.band])+'</div>'+
+           '<div class="scale">'+btns+'</div>'+
+           '<div class="scalelabels"><span>3 Emerging</span><span>5 Developing</span><span>7 Secure</span><span>10 Excellent</span></div></div>';
+    });
+    out+='</div></div>';
+  });
+  wrap.innerHTML=out;
+  wrap.querySelectorAll('.sb').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-sk'),v=+b.getAttribute('data-v');if(state.scores[id]===v){delete state.scores[id];}else{state.scores[id]=v;}drawSkills();};});
+  wrap.querySelectorAll('.ex-btn').forEach(function(b){b.onclick=function(){document.getElementById('ex-'+b.getAttribute('data-ex')).classList.toggle('show');};});
+  updateProg();
+}
+
+function anchorHtml(a){
+  if(!a)return '';
+  return esc(a).replace(/(^|\s)(3 Emerging|5 Developing|7 Secure|10 Excellent-for-age):/g,'$1<b>$2:</b>');
+}
+function countApplicable(){return state.band?applicable().length:0;}
+function countScored(){var n=0;for(var k in state.scores)n++;return n;}
+function updateProg(){
+  var tot=countApplicable(),done=countScored();
+  var prog=document.getElementById('prog');var sub=document.getElementById('submit');
+  if(!prog)return;
+  prog.innerHTML='<b>'+done+'</b> / '+tot+' skills scored';
+  var ready=tot>0&&done===tot;
+  sub.disabled=!ready;sub.textContent=ready?'Submit':'Score all '+tot;
+}
+
+function submit(){
+  var sub=document.getElementById('submit');sub.disabled=true;sub.textContent='Sending...';
+  var sk=applicable();
+  var scores=sk.map(function(s){return {id:s.id,name:s.name,corner:s.corner,score:state.scores[s.id]};});
+  fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({c:TOKEN,playerId:state.player.id,band:state.band,scores:scores,notes:state.notes})})
+   .then(function(r){return r.json();})
+   .then(function(j){if(j.ok){renderDone(j);}else{sub.disabled=false;sub.textContent='Submit';alert('Could not save: '+(j.error||'try again'));}})
+   .catch(function(){sub.disabled=false;sub.textContent='Submit';alert('Network error — please try again.');});
+}
+function renderDone(j){
+  app.innerHTML=header('')+'<div class="done"><div class="big">✅</div><h1>Sent for review</h1><p class="muted">'+esc(j.child)+'’s Blueprint for '+esc(j.term)+' is in John’s approval queue. It won’t reach the family until it’s approved.</p><button class="btn" id="again" style="margin-top:16px">Score another player</button></div>';
+  document.getElementById('again').onclick=renderPick;
+}
+
+if(!TOKEN){showError("This link is missing its coach code. Ask John for your personal coaching link.");}
+else{
+  fetch(FN+'?c='+encodeURIComponent(TOKEN)).then(function(r){return r.json();}).then(function(j){
+    if(!j.ok){showError(j.error||"This link isn’t valid.");return;}
+    D={coach:j.coach,players:j.players,skills:j.skills};
+    renderPick();
+  }).catch(function(){showError("Couldn’t load — check your connection and refresh.");});
+}
+})();
+</script></body></html>
