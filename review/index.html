@@ -138,11 +138,15 @@ function submit(action){
   fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({c:TOKEN,action:action,assessmentId:cur.id,scores:scores,focus:focus,reviewNotes:rnote})})
    .then(function(r){return r.json();}).then(function(j){
      if(!j.ok){sa.disabled=false;sv.disabled=false;sa.textContent='Approve';alert('Error: '+(j.error||'try again'));return;}
-     if(action==='approve'){renderDone();}else{load();}
+     if(action==='approve'){renderDone(j);}else{load();}
    }).catch(function(){sa.disabled=false;sv.disabled=false;sa.textContent='Approve';alert('Network error — try again.');});
 }
-function renderDone(){
-  app.innerHTML=head('')+'<div class="done"><div class="big">✅</div><h1>Approved</h1><p class="muted">'+esc(cur.player.name)+'’s Blueprint is approved. (Sending it to the family is the next piece we’ll build.)</p><button class="btn" id="next" style="margin-top:16px">Back to the queue</button></div>';
+function renderDone(j){
+  var link=j.familyToken?('https://gkcoachjohn.github.io/ff-blueprint/p/?p='+encodeURIComponent(j.familyToken)):'';
+  var linkbox=link?('<div class="field" style="margin-top:18px"><label>'+esc(cur.player.name)+'’s family Blueprint link</label><div class="notebox" style="word-break:break-all;font-size:12.5px" id="flink">'+esc(link)+'</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" id="copy">Copy link</button><a class="btn" href="'+link+'" target="_blank" rel="noopener" style="text-decoration:none;text-align:center">Open it</a></div></div>'):'';
+  app.innerHTML=head('')+'<div class="done"><div class="big">✅</div><h1>Approved</h1><p class="muted">'+esc(cur.player.name)+'’s Blueprint is ready to share. This is the exact page the family sees.</p>'+linkbox+'<button class="btn ghost" id="next" style="margin-top:18px">Back to the queue</button></div>';
+  var c=document.getElementById('copy');
+  if(c)c.onclick=function(){navigator.clipboard.writeText(link).then(function(){c.textContent='Copied ✓';},function(){});};
   document.getElementById('next').onclick=load;
 }
 
